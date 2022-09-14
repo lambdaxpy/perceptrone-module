@@ -1,2 +1,3 @@
 # perceptrone-module
-This repository includes varies implementations for perceptrones.
+This module includes varies implementations of perceptrones.
+It is currently under development.
