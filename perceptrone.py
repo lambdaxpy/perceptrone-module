@@ -38,7 +38,7 @@ class Perceptrone():
     Perceptrone with t = 0 and -t as a weight.
 
     """
-    def __init__(self, input_number: int, _tuple = False):
+    def __init__(self, input_number: int, _tuple = False) -> None:
         """
         __init__
 
@@ -55,25 +55,25 @@ class Perceptrone():
         self._t = 0
         self._weights = []
 
-    def set_t(self, value: float):
+    def set_t(self, value: float) -> None:
         """
         set_t
 
-        Set the result for the perceptrone.
+        setter-method for self._t
 
-        :param value: [description]
+        :param value: new value _t
         :type value: float
         """
         
-        self._t = value
+        self._t = value 
 
-    def set_weights(self, value_list: list):
+    def set_weights(self, value_list: list) -> None:
         """
         set_weights
 
-        This method sets the weights of the perceptrone inputs.
+        setter-method for self._weights
 
-        :param value_list: [description]
+        :param value_list: new list of weights
         :type value_list: list
         """
         self._weights = value_list
@@ -101,7 +101,7 @@ class Perceptrone():
         else:
             return 0
 
-    def _increment_weights(self, vector: list):
+    def _increment_weights(self, vector: list) -> None:
         """
         _increment_weights
 
@@ -110,15 +110,15 @@ class Perceptrone():
         :param vector: incrementing by vector
         :type vector: list
         """
-        for index in range(self._input_number):
+        for index in range(len(vector)):
             if self._tuple:
-                red, green, blue, alpha = vector[index]
+                red, green, blue, _ = vector[index]
                 value = (red + green + blue)
             else:
                 value = vector[index]
             self._weights[index] += value
 
-    def _decrement_weights(self, vector: list):
+    def _decrement_weights(self, vector: list) -> None:
         """
         _decrement_weights
 
@@ -135,7 +135,7 @@ class Perceptrone():
                 value = vector[index]
             self._weights[index] -= value
 
-    def train(self, data_true: list, data_false: list, epoch = (sys.maxsize * 2 + 1)) -> list:
+    def train(self, data_true: list, data_false: list, epoch: int = (sys.maxsize * 2 + 1)) -> list:
         """
         train
 
@@ -169,22 +169,20 @@ class Perceptrone():
         #Learning algorithm
         success = 0
         len_data = len(data_true) + len(data_false)
-        current_epoch = 0
-        while success < len_data and current_epoch < epoch:
+        current_epoch = 1
+        while success < len_data and current_epoch <= epoch:
             print(f"Epoch {current_epoch}")
             success = 0
             for vector in data_true:
                 sum = 0 #pylint: disable=redefined-builtin
                 for index, input_value in enumerate(vector):
                     if self._tuple:
-                        red, green, blue, alpha = input_value   #pylint: disable=unused-variable
-                        sum += (red + green + blue) * self._weights[index]
+                        red, green, blue, _ = input_value
+                        sum += ((red + green + blue) * self._weights[index])
                     else:
-                        sum += input_value * self._weights[index]
-                #print("SUM: ", sum)
+                        sum += (input_value * self._weights[index])
                 if sum <= self._t:
-                    for index, input_value in enumerate(vector):
-                        self._increment_weights(vector)
+                    self._increment_weights(vector)
                 else:
                     success += 1
 
@@ -197,12 +195,11 @@ class Perceptrone():
                     else:
                         sum += input_value * self._weights[index]
                 if sum >= self._t:
-                    for index, input_value in enumerate(vector):
-                            self._decrement_weights(vector)
+                    self._decrement_weights(vector)
                 else:
                     success += 1
 
-                current_epoch += 1
+            current_epoch += 1
 
         #Set new weights
         self._weights = [self._weights[index] for index in range(1, len(self._weights))]
@@ -214,10 +211,13 @@ class Perceptrone():
 
 if __name__ == "__main__":
     data_true = [
-        [5, 8, 4]
+        [1, 0, 0, 6],
+        [1, 5, 0, 6]
     ]
     data_false = [
-        [1, 1, 1]
+        [5, 2, 3, 4],
+        [1, 8, 9, 4]
     ]
-    p = Perceptrone(3)
-    p.train(data_true, data_false)
+    p = Perceptrone(4)
+    new_weights = p.train(data_true, data_false, epoch=500)
+    p.set_weights(new_weights)
